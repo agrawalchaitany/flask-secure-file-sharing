@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Sharing - Home</title>
+    <style>
+        /* Inline CSS for index.html */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-wrapper a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 0 15px;
+        }
+
+        .nav-wrapper .right {
+            list-style-type: none;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-wrapper .right li {
+            display: inline;
+            margin-right: 10px;
+        }
+
+        button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .logout-btn,
+        .login-btn,
+        .register-btn {
+            background-color: #f44336;
+            color: white;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover,
+        .login-btn:hover,
+        .register-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        h1 {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .flash {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin: 10px auto;
+            border-radius: 5px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+            border: 1px solid #f5c6cb;
+        }
+
+        main {
+            padding: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="{{ url_for('main.index') }}" class="brand-logo">File Sharing</a>
+            <ul class="right">
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.show_files') }}">Files</a></li>
+                    {% if current_user.is_ops %}
+                        <li><a href="{{ url_for('main.upload_file') }}">Upload</a></li>
+                    {% endif %}
+                    <!-- Logout Form -->
+                    <li>
+                        <form action="{{ url_for('main.logout') }}" method="POST" style="display:inline;">
+                            {{ form.hidden_tag() }}
+                            <button type="submit" class="logout-btn">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <!-- Login Form -->
+                    <li>
+                        <form action="{{ url_for('main.login') }}" method="GET" style="display:inline;">
+                            <button type="submit" class="login-btn">Login</button>
+                        </form>
+                    </li>
+                    <!-- Register Form -->
+                    <li>
+                        <form action="{{ url_for('main.register') }}" method="GET" style="display:inline;">
+                            <button type="submit" class="register-btn">Register</button>
+                        </form>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <main>
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        <h1>Welcome to Secure File Sharing</h1>
+        <!-- Add file list or other dynamic content below -->
+    </main>
+
+    <script>
+        // Inline JavaScript for index.html
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Index page loaded.");
+            // Add any custom JavaScript functionality here
+        });
+    </script>
+</body>
+</html>

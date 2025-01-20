@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Secure File Sharing</title>
+    <style>
+        /* Enhanced CSS for login.html */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px 20px;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-wrapper a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 0 10px;
+        }
+
+        .nav-wrapper .right {
+            list-style: none;
+            margin: 0;
+            display: flex;
+        }
+
+        .nav-wrapper .right li {
+            display: inline;
+            margin-left: 10px;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .flash {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="{{ url_for('main.index') }}" class="brand-logo">File Sharing</a>
+            <ul class="right">
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.index') }}">Files</a></li>
+                    <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('main.register') }}">Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <main>
+        <div class="form-container">
+            <h1>Login to your account</h1>
+            
+            <form method="POST" action="{{ url_for('main.login') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    {{ form.email(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    {{ form.password(class="form-control") }}
+                </div>
+                <button type="submit" class="btn">Login</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 Secure File Sharing. All rights reserved.
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Enhanced Login page loaded.");
+        });
+    </script>
+</body>
+</html>

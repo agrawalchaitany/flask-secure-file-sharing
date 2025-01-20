@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Files</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: #ffffff;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        a {
+            text-decoration: none;
+            color: #3498db;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .btn-download {
+            padding: 8px 12px;
+            background-color: #2ecc71;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-download:hover {
+            background-color: #27ae60;
+        }
+        .no-files {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Available Files</h1>
+        <a href="{{ url_for('main.index') }}">Back to Dashboard</a>
+        <table>
+            <thead>
+                <tr>
+                    <th>File Name</th>
+                    <th>Uploaded By</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if files %}
+                    {% for file in files %}
+                    <tr>
+                        <td>{{ file.filename }}</td>
+                        <td>{{ file.uploaded_by }}</td>
+                        <td>
+                            <button class="btn-download" onclick="downloadFile('{{ url_for('static', filename='uploads/' + file.filename) }}')">Download</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="no-files">No files available for download.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // JavaScript for handling download button click
+        function downloadFile(fileUrl) {
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.setAttribute('download', '');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // Example of any future interactivity
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Page loaded successfully!');
+        });
+    </script>
+</body>
+</html>

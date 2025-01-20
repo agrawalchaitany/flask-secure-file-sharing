@@ -1,0 +1,57 @@
+# Python virtual environment
+venv/
+env/
+.env
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Database files
+*.db
+*.sqlite3
+*.sqlite
+
+# Instance folder
+instance/
+
+# Migrations
+migrations/versions/*
+!migrations/versions/.gitkeep
+
+# Uploads folder - ignore contents but keep folder
+uploads/*
+!uploads/.gitkeep
+
+# Environment variables
+.env
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Distribution / packaging
+dist/
+build/
+*.egg-info/
+
+# Log files
+*.log
+
+# Local development configuration
+config.py
+
+# Windows specific files
+Thumbs.db
+*.db
+desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+~$*

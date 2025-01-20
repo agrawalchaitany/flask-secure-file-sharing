@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Secure File Sharing</title>
+    <style>
+        /* Enhanced CSS */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f2f5;
+        }
+
+        nav {
+            background-color: #333;
+            padding: 10px 20px;
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-wrapper a {
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+            margin: 0 10px;
+        }
+
+        .nav-wrapper .right {
+            list-style: none;
+            margin: 0;
+            display: flex;
+        }
+
+        .nav-wrapper .right li {
+            display: inline;
+            margin-left: 10px;
+        }
+
+        main {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 80vh;
+            padding: 20px;
+        }
+
+        .form-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+
+        .flash {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background-color: #333;
+            color: white;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper">
+            <a href="{{ url_for('main.index') }}" class="brand-logo">File Sharing</a>
+            <ul class="right">
+                {% if current_user.is_authenticated %}
+                    <li><a href="{{ url_for('main.index') }}">Files</a></li>
+                    <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('main.login') }}">Login</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    
+    <main>
+        <div class="form-container">
+            <h1>Create an Account</h1>
+            
+            <form method="POST" action="{{ url_for('main.register') }}">
+                {{ form.hidden_tag() }}
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    {{ form.email(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    {{ form.password(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label for="password_confirm">Confirm Password</label>
+                    {{ form.password_confirm(class="form-control") }}
+                </div>
+                <div class="form-group">
+                    <label>Are you an ISOPS user?</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="isops" value="yes" {% if isops == "True" %}checked{% endif %}>
+                            True
+                        </label>
+                        <label>
+                            <input type="radio" name="isops" value="no" {% if isops == "False" %}checked{% endif %}>
+                            False
+                        </label>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Register</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        &copy; 2025 Secure File Sharing. All rights reserved.
+    </footer>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            console.log("Register page with ISOPS radio buttons loaded.");
+        });
+    </script>
+</body>
+</html>
