@@ -41,7 +41,7 @@ build/
 *.log
 
 # Local development configuration
-config.py
+#config.py
 
 # Windows specific files
 Thumbs.db
