@@ -8,7 +8,9 @@ from werkzeug.utils import secure_filename
 from itsdangerous import URLSafeTimedSerializer
 from flask_mail import Message
 from flask_wtf.csrf import CSRFProtect
+from dotenv import load_dotenv
 import os
+load_dotenv()
 csrf = CSRFProtect()
 main = Blueprint('main', __name__)
 
@@ -67,7 +69,7 @@ def register():
         send_verification_email(user)
         flash('Check your email to verify your account.')
         return redirect(url_for('main.login'))
-    return render_template('login.html', form=form)
+    return render_template('register.html', form=form)
 
 @main.route('/verify/<token>')
 def verify_email(token):
