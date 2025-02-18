@@ -7,6 +7,7 @@ from flask_mail import Mail
 from flask_wtf.csrf import CSRFProtect
 from dotenv import load_dotenv
 import os
+import logging
 load_dotenv()
 
 db = SQLAlchemy()
@@ -14,6 +15,8 @@ migrate = Migrate()
 login_manager = LoginManager()
 jwt = JWTManager()
 mail = Mail()
+
+logging.getLogger('mail').setLevel(logging.DEBUG)
 
 def create_app():
     app = Flask(__name__)

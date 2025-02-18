@@ -1,195 +1,210 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - Secure File Sharing</title>
-    <style>
-        /* Enhanced CSS */
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-        }
+{% extends "base.html" %}
 
-        nav {
-            background-color: #333;
-            padding: 10px 20px;
-        }
+{% block title %}Register - Secure File Sharing{% endblock %}
 
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+{% block additional_styles %}
+.register-card {
+    max-width: 28rem;
+    margin: 0 auto;
+}
 
-        .nav-wrapper a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            margin: 0 10px;
-        }
+.form-group {
+    margin-bottom: 1.5rem;
+}
 
-        .nav-wrapper .right {
-            list-style: none;
-            margin: 0;
-            display: flex;
-        }
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
 
-        .nav-wrapper .right li {
-            display: inline;
-            margin-left: 10px;
-        }
+.form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
 
-        main {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 80vh;
-            padding: 20px;
-        }
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
 
-        .form-container {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            width: 100%;
-            max-width: 400px;
-        }
+.radio-group {
+    display: flex;
+    gap: 2rem;
+    margin-top: 0.5rem;
+}
 
-        h1 {
-            text-align: center;
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #333;
-        }
+.radio-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
 
-        .form-group {
-            margin-bottom: 15px;
-        }
+.radio-option input[type="radio"] {
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+}
 
-        label {
-            display: block;
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 5px;
-        }
+.btn-block {
+    width: 100%;
+    justify-content: center;
+}
 
-        .form-control {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
+.form-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    color: var(--secondary-color);
+}
 
-        .form-control:focus {
-            border-color: #007bff;
-            outline: none;
-            box-shadow: 0 0 4px rgba(0, 123, 255, 0.2);
-        }
+.form-footer a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
 
-        .btn {
-            width: 100%;
-            padding: 12px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
+.form-footer a:hover {
+    text-decoration: underline;
+}
 
-        .btn:hover {
-            background-color: #0056b3;
-        }
+.validation-error {
+    color: var(--danger-color);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
 
-        .flash {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 5px;
-            text-align: center;
-        }
+.password-requirements {
+    font-size: 0.875rem;
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+}
 
-        .radio-group {
-            display: flex;
-            gap: 15px;
-            margin-top: 10px;
-        }
+.password-strength {
+    height: 4px;
+    background-color: var(--border-color);
+    border-radius: 2px;
+    margin-top: 0.5rem;
+    overflow: hidden;
+}
 
-        footer {
-            text-align: center;
-            padding: 10px 0;
-            background-color: #333;
-            color: white;
-            font-size: 14px;
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="{{ url_for('main.index') }}" class="brand-logo">File Sharing</a>
-            <ul class="right">
-                {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('main.index') }}">Files</a></li>
-                    <li><a href="{{ url_for('main.logout') }}">Logout</a></li>
-                {% else %}
-                    <li><a href="{{ url_for('main.login') }}">Login</a></li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
+.password-strength-bar {
+    height: 100%;
+    width: 0;
+    transition: width 0.3s, background-color 0.3s;
+}
+{% endblock %}
+
+{% block content %}
+<div class="register-card card">
+    <h1 class="text-2xl font-bold mb-6">Create an Account</h1>
     
-    <main>
-        <div class="form-container">
-            <h1>Create an Account</h1>
-            
-            <form method="POST" action="{{ url_for('main.register') }}">
-                {{ form.hidden_tag() }}
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    {{ form.email(class="form-control") }}
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    {{ form.password(class="form-control") }}
-                </div>
-                <div class="form-group">
-                    <label for="password_confirm">Confirm Password</label>
-                    {{ form.password_confirm(class="form-control") }}
-                </div>
-                <div class="form-group">
-                    <label>Are you an ISOPS user?</label>
-                    <div class="radio-group">
-                        <label>
-                            <input type="radio" name="isops" value="yes" {% if isops == "True" %}checked{% endif %}>
-                            True
-                        </label>
-                        <label>
-                            <input type="radio" name="isops" value="no" {% if isops == "False" %}checked{% endif %}>
-                            False
-                        </label>
-                    </div>
-                </div>
-                <button type="submit" class="btn">Register</button>
-            </form>
+    <form method="POST" action="{{ url_for('main.register') }}" id="registerForm">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            <label for="email">Email Address</label>
+            {{ form.email(class="form-control", placeholder="Enter your email") }}
+            {% if form.email.errors %}
+                {% for error in form.email.errors %}
+                    <div class="validation-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
         </div>
-    </main>
+        
+        <div class="form-group">
+            <label for="password">Password</label>
+            {{ form.password(class="form-control", placeholder="Create a strong password") }}
+            <div class="password-strength">
+                <div class="password-strength-bar" id="strengthBar"></div>
+            </div>
+            <div class="password-requirements">
+                Password must be at least 8 characters long and include:
+                <ul style="margin-top: 0.5rem; margin-left: 1.5rem;">
+                    <li id="lengthReq">At least 8 characters</li>
+                    <li id="upperReq">One uppercase letter</li>
+                    <li id="lowerReq">One lowercase letter</li>
+                    <li id="numberReq">One number</li>
+                    <li id="specialReq">One special character</li>
+                </ul>
+            </div>
+            {% if form.password.errors %}
+                {% for error in form.password.errors %}
+                    <div class="validation-error">{{ error }}</div>
+                {% endfor %}
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label>User Type</label>
+            <div class="radio-group">
+                <label class="radio-option">
+                    <input type="radio" name="isops" value="no" checked>
+                    <span>Regular User</span>
+                </label>
+                <label class="radio-option">
+                    <input type="radio" name="isops" value="yes">
+                    <span>ISOPS User</span>
+                </label>
+            </div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary btn-block">
+            <i class="fas fa-user-plus"></i> Create Account
+        </button>
+    </form>
+    
+    <div class="form-footer">
+        Already have an account? <a href="{{ url_for('main.login') }}">Login here</a>
+    </div>
+</div>
+{% endblock %}
 
-    <footer>
-        &copy; 2025 Secure File Sharing. All rights reserved.
-    </footer>
+{% block scripts %}
+<script>
+    const passwordInput = document.querySelector('#password');
+    const strengthBar = document.querySelector('#strengthBar');
+    const requirements = {
+        length: document.querySelector('#lengthReq'),
+        upper: document.querySelector('#upperReq'),
+        lower: document.querySelector('#lowerReq'),
+        number: document.querySelector('#numberReq'),
+        special: document.querySelector('#specialReq')
+    };
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("Register page with ISOPS radio buttons loaded.");
+    function checkPasswordStrength(password) {
+        const checks = {
+            length: password.length >= 8,
+            upper: /[A-Z]/.test(password),
+            lower: /[a-z]/.test(password),
+            number: /[0-9]/.test(password),
+            special: /[^A-Za-z0-9]/.test(password)
+        };
+
+        // Update requirement indicators
+        Object.keys(checks).forEach(key => {
+            requirements[key].style.color = checks[key] ? '#22c55e' : '#64748b';
         });
-    </script>
-</body>
-</html>
+
+        // Calculate strength percentage
+        const strength = Object.values(checks).filter(Boolean).length * 20;
+        strengthBar.style.width = `${strength}%`;
+
+        // Update color based on strength
+        if (strength <= 20) strengthBar.style.backgroundColor = '#ef4444';
+        else if (strength <= 40) strengthBar.style.backgroundColor = '#f97316';
+        else if (strength <= 60) strengthBar.style.backgroundColor = '#f59e0b';
+        else if (strength <= 80) strengthBar.style.backgroundColor = '#84cc16';
+        else strengthBar.style.backgroundColor = '#22c55e';
+    }
+
+    passwordInput.addEventListener('input', (e) => {
+        checkPasswordStrength(e.target.value);
+    });
+</script>
+{% endblock %}

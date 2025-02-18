@@ -1,147 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Sharing - Home</title>
-    <style>
-        /* Inline CSS for index.html */
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
+{% extends "base.html" %}
 
-        nav {
-            background-color: #333;
-            padding: 10px;
-        }
+{% block title %}Welcome - Secure File Sharing{% endblock %}
 
-        .nav-wrapper {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+{% block additional_styles %}
+.hero {
+    text-align: center;
+    padding: 3rem 0;
+    max-width: 48rem;
+    margin: 0 auto;
+}
 
-        .nav-wrapper a {
-            color: white;
-            text-decoration: none;
-            font-size: 18px;
-            font-weight: bold;
-            padding: 0 15px;
-        }
+.hero-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
 
-        .nav-wrapper .right {
-            list-style-type: none;
-            margin: 0;
-            display: flex;
-            align-items: center;
-        }
+.hero-subtitle {
+    font-size: 1.25rem;
+    color: var(--secondary-color);
+    margin-bottom: 2rem;
+}
 
-        .nav-wrapper .right li {
-            display: inline;
-            margin-right: 10px;
-        }
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    margin-top: 4rem;
+}
 
-        button {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 3px;
-            cursor: pointer;
-        }
+.feature-card {
+    background-color: white;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    transition: transform 0.2s;
+}
 
-        .logout-btn,
-        .login-btn,
-        .register-btn {
-            background-color: #f44336;
-            color: white;
-            font-size: 14px;
-        }
+.feature-card:hover {
+    transform: translateY(-5px);
+}
 
-        .logout-btn:hover,
-        .login-btn:hover,
-        .register-btn:hover {
-            background-color: #d32f2f;
-        }
+.feature-icon {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
 
-        h1 {
-            text-align: center;
-            padding: 20px;
-        }
+.feature-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
 
-        .flash {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            margin: 10px auto;
-            border-radius: 5px;
-            width: 90%;
-            max-width: 600px;
-            text-align: center;
-            border: 1px solid #f5c6cb;
-        }
+.feature-description {
+    color: var(--secondary-color);
+    line-height: 1.6;
+}
 
-        main {
-            padding: 20px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <nav>
-        <div class="nav-wrapper">
-            <a href="{{ url_for('main.index') }}" class="brand-logo">File Sharing</a>
-            <ul class="right">
-                {% if current_user.is_authenticated %}
-                    <li><a href="{{ url_for('main.show_files') }}">Files</a></li>
-                    {% if current_user.is_ops %}
-                        <li><a href="{{ url_for('main.upload_file') }}">Upload</a></li>
-                    {% endif %}
-                    <!-- Logout Form -->
-                    <li>
-                        <form action="{{ url_for('main.logout') }}" method="POST" style="display:inline;">
-                            {{ form.hidden_tag() }}
-                            <button type="submit" class="logout-btn">Logout</button>
-                        </form>
-                    </li>
-                {% else %}
-                    <!-- Login Form -->
-                    <li>
-                        <form action="{{ url_for('main.login') }}" method="GET" style="display:inline;">
-                            <button type="submit" class="login-btn">Login</button>
-                        </form>
-                    </li>
-                    <!-- Register Form -->
-                    <li>
-                        <form action="{{ url_for('main.register') }}" method="GET" style="display:inline;">
-                            <button type="submit" class="register-btn">Register</button>
-                        </form>
-                    </li>
-                {% endif %}
-            </ul>
-        </div>
-    </nav>
+.cta-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+}
+
+.btn-secondary {
+    background-color: white;
+    color: var(--primary-color);
+    border: 1px solid var(--primary-color);
+}
+
+.btn-secondary:hover {
+    background-color: #f8fafc;
+}
+
+@media (max-width: 640px) {
+    .hero-title {
+        font-size: 2rem;
+    }
     
-    <main>
-        {% with messages = get_flashed_messages() %}
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="flash">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-        
-        <h1>Welcome to Secure File Sharing</h1>
-        <!-- Add file list or other dynamic content below -->
-    </main>
+    .hero-subtitle {
+        font-size: 1.125rem;
+    }
+    
+    .cta-buttons {
+        flex-direction: column;
+    }
+    
+    .btn {
+        width: 100%;
+    }
+}
+{% endblock %}
 
-    <script>
-        // Inline JavaScript for index.html
-        document.addEventListener("DOMContentLoaded", function() {
-            console.log("Index page loaded.");
-            // Add any custom JavaScript functionality here
-        });
-    </script>
-</body>
-</html>
+{% block content %}
+<div class="hero">
+    <h1 class="hero-title">Secure File Sharing Made Simple</h1>
+    <p class="hero-subtitle">
+        Share your files securely with controlled access and real-time tracking
+    </p>
+    
+    {% if not current_user.is_authenticated %}
+    <div class="cta-buttons">
+        <a href="{{ url_for('main.register') }}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Get Started
+        </a>
+        <a href="{{ url_for('main.login') }}" class="btn btn-secondary">
+            <i class="fas fa-sign-in-alt"></i> Login
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<div class="features">
+    <div class="feature-card">
+        <i class="fas fa-shield-alt feature-icon"></i>
+        <h2 class="feature-title">Secure Storage</h2>
+        <p class="feature-description">
+            Your files are encrypted and stored securely with industry-standard protocols
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <i class="fas fa-users feature-icon"></i>
+        <h2 class="feature-title">Access Control</h2>
+        <p class="feature-description">
+            Manage who can access your files with role-based permissions
+        </p>
+    </div>
+    
+    <div class="feature-card">
+        <i class="fas fa-chart-line feature-icon"></i>
+        <h2 class="feature-title">Activity Tracking</h2>
+        <p class="feature-description">
+            Monitor file downloads and access history in real-time
+        </p>
+    </div>
+</div>
+{% endblock %}

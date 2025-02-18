@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Secure File Sharing{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --background-color: #f8fafc;
+            --text-color: #1e293b;
+            --border-color: #e2e8f0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.5;
+        }
+
+        .navbar {
+            background-color: white;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--secondary-color);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-link.active {
+            color: var(--primary-color);
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        .nav-link i {
+            font-size: 1.25rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 6rem auto 2rem;
+            padding: 0 2rem;
+        }
+
+        .card {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .flash-messages {
+            position: fixed;
+            top: 5rem;
+            right: 1rem;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            max-width: 24rem;
+        }
+
+        .flash {
+            padding: 1rem;
+            border-radius: 0.375rem;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .flash-success {
+            background-color: #dcfce7;
+            color: #166534;
+        }
+
+        .flash-error {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .fade-out {
+            animation: fadeOut 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: translateX(100%);
+            }
+        }
+
+        {% block additional_styles %}{% endblock %}
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="{{ url_for('main.index') }}" class="nav-brand">
+                <i class="fas fa-shield-alt"></i> SecureShare
+            </a>
+            <div class="nav-links">
+                <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">
+                    <i class="fas fa-home"></i>
+                    Home
+                </a>
+                <a href="{{ url_for('main.show_files') }}" class="nav-link {% if request.endpoint == 'main.show_files' %}active{% endif %}">
+                    <i class="fas fa-file-alt"></i>
+                    Files
+                </a>
+                {% if current_user.is_ops %}
+                    <a href="{{ url_for('main.upload_file') }}" class="nav-link {% if request.endpoint == 'main.upload_file' %}active{% endif %}">
+                        <i class="fas fa-upload"></i>
+                        Upload
+                    </a>
+                {% endif %}
+                <form action="{{ url_for('main.logout') }}" method="POST" style="display: inline;">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages">
+                    {% for category, message in messages %}
+                        <div class="flash flash-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle flash messages
+            const flashMessages = document.querySelectorAll('.flash');
+            flashMessages.forEach(function(flash) {
+                // Auto-dismiss after 5 seconds
+                setTimeout(() => {
+                    flash.classList.add('fade-out');
+                    setTimeout(() => {
+                        flash.remove();
+                    }, 300);
+                }, 5000);
+
+                // Click to dismiss
+                flash.addEventListener('click', function() {
+                    flash.classList.add('fade-out');
+                    setTimeout(() => {
+                        flash.remove();
+                    }, 300);
+                });
+            });
+        });
+    </script>
+    {% block scripts %}{% endblock %}
+</body>
+</html> 
