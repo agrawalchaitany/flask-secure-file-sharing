@@ -17,8 +17,8 @@
 
 ### 1️⃣ Clone the Repository
 ```bash
-git clone https://github.com/yourusername/secureshare.git
-cd secureshare
+git clone https://github.com/agrawalchaitany/flask-secure-file-sharing.git
+cd flask-secure-file-sharing
 ```
 
 ### 2️⃣ Create a Virtual Environment
