@@ -13,7 +13,6 @@ import os
 import logging
 import json
 import queue
-import threading
 from datetime import datetime
 from flask_login import LoginManager
 from urllib.parse import urlparse
@@ -473,6 +472,7 @@ def refresh_data():
             'error': str(e)
         }), 500
 
+
 @main.route('/share/<int:file_id>')
 @login_required
 def generate_share_link(file_id):
@@ -482,7 +482,7 @@ def generate_share_link(file_id):
     serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
     token = serializer.dumps({'file_id': file_id}, salt='file-share')
     
-    # Create the shareable link
+     # Create the shareable link
     share_link = url_for('main.download_shared', token=token, _external=True)
     
     return jsonify({
