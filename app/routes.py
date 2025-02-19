@@ -15,10 +15,14 @@ import json
 import queue
 import threading
 from datetime import datetime
+from flask_login import LoginManager
+from urllib.parse import urlparse
+
 
 load_dotenv()
 csrf = CSRFProtect()
 main = Blueprint('main', __name__)
+login_manager = LoginManager()
 
 logging.basicConfig(level=logging.DEBUG)  # Add this for better debugging
 
@@ -74,6 +78,13 @@ def send_verification_email(user):
         logging.error(f"Failed to send verification email: {str(e)}")
         return False
 
+@main.route('/')
+def root():
+    """Root route handler"""
+    if current_user.is_authenticated:
+        return redirect(url_for('main.show_files'))
+    return redirect(url_for('main.login'))
+
 @main.route('/index')
 @login_required
 def index():
@@ -84,7 +95,7 @@ def index():
 @main.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.show_files'))
     
     form = LoginForm()
     if form.validate_on_submit():
@@ -98,7 +109,10 @@ def login():
             login_user(user)
             flash('Logged in successfully!', 'success')
             next_page = request.args.get('next')
-            return redirect(next_page if next_page else url_for('main.index'))
+            # Make sure next_page is safe
+            if next_page and urlparse(next_page).netloc == '':
+                return redirect(next_page)
+            return redirect(url_for('main.show_files'))
         else:
             flash('Invalid email or password.', 'error')
     
@@ -233,10 +247,10 @@ def upload_file():
     return render_template('upload.html', form=form)
 
 @main.route('/logout', methods=['POST'])
-@csrf.exempt
 @login_required
 def logout():
     logout_user()
+    flash('You have been logged out successfully.', 'success')
     return redirect(url_for('main.login'))
 
 def is_valid_file_type(filename):
@@ -309,37 +323,32 @@ def notify_clients(data):
 @main.route('/delete/<int:file_id>', methods=['POST'])
 @login_required
 def delete_file(file_id):
-    file = File.query.get_or_404(file_id)
-    
-    if file.uploaded_by != current_user.id and not current_user.is_ops:
-        flash('You do not have permission to delete this file.', 'error')
-        return redirect(url_for('main.show_files'))
-    
     try:
-        # Get file info before deletion
-        file_info = {
-            'type': 'file_update',
-            'action': 'delete',
-            'file_id': file.id
-        }
+        file = File.query.get_or_404(file_id)
         
-        # Delete file
-        uploads_dir = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'uploads')
-        file_path = os.path.join(uploads_dir, secure_filename(file.filename))
+        # Check if user has permission to delete
+        if not (current_user.id == file.uploaded_by or current_user.is_ops):
+            return jsonify({
+                'success': False,
+                'error': 'Permission denied'
+            }), 403
         
-        if os.path.exists(file_path):
-            os.remove(file_path)
+        # Delete the actual file
+        if os.path.exists(file.file_path):
+            os.remove(file.file_path)
         
+        # Delete database record
         db.session.delete(file)
         db.session.commit()
         
-        # Notify all clients
-        notify_clients(file_info)
-        
         return jsonify({'success': True})
+        
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'error': str(e)}), 500
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
 
 @main.route('/download/<int:file_id>')
 @login_required
@@ -463,6 +472,64 @@ def refresh_data():
             'success': False,
             'error': str(e)
         }), 500
+
+@main.route('/share/<int:file_id>')
+@login_required
+def generate_share_link(file_id):
+    file = File.query.get_or_404(file_id)
+    
+    # Generate a unique token for the file
+    serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+    token = serializer.dumps({'file_id': file_id}, salt='file-share')
+    
+    # Create the shareable link
+    share_link = url_for('main.download_shared', token=token, _external=True)
+    
+    return jsonify({
+        'success': True,
+        'share_link': share_link
+    })
+
+@main.route('/shared/<token>')
+def download_shared(token):
+    try:
+        serializer = URLSafeTimedSerializer(current_app.config['SECRET_KEY'])
+        data = serializer.loads(token, salt='file-share', max_age=604800)  # Link expires in 7 days
+        
+        file_id = data.get('file_id')
+        file = File.query.get_or_404(file_id)
+        
+        # Increment download count
+        file.download_count += 1
+        db.session.commit()
+        
+        # Return file
+        return send_file(
+            file.file_path,
+            as_attachment=True,
+            download_name=file.filename
+        )
+        
+    except Exception as e:
+        flash('Invalid or expired share link.', 'error')
+        return redirect(url_for('main.index'))
+
+# Add this to your context processors
+@main.context_processor
+def utility_processor():
+    return {
+        'now': datetime.utcnow()
+    }
+
+# Update the login_manager configuration
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
+
+# Configure login manager
+login_manager.login_view = 'main.login'
+login_manager.login_message = 'Please log in to access this page.'
+login_manager.login_message_category = 'warning'
 
 
 

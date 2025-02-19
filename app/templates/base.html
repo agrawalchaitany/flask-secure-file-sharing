@@ -179,36 +179,136 @@
             }
         }
 
+        .footer {
+            background-color: white;
+            padding: 2rem 0;
+            margin-top: 4rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .footer-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .footer-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-link {
+            color: var(--secondary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: color 0.2s;
+        }
+
+        .footer-link:hover {
+            color: var(--primary-color);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f1f5f9;
+            color: var(--secondary-color);
+            border-radius: 50%;
+            transition: all 0.2s;
+        }
+
+        .social-link:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: var(--secondary-color);
+            font-size: 0.875rem;
+        }
+
+        .container {
+            min-height: calc(100vh - 70px - 300px); /* Adjust for footer height */
+        }
+
         {% block additional_styles %}{% endblock %}
     </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <a href="{{ url_for('main.index') }}" class="nav-brand">
-                <i class="fas fa-shield-alt"></i> SecureShare
-            </a>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.show_files') }}" class="nav-brand">
+                    <i class="fas fa-shield-alt"></i> SecureShare
+                </a>
+            {% else %}
+                <a href="{{ url_for('main.login') }}" class="nav-brand">
+                    <i class="fas fa-shield-alt"></i> SecureShare
+                </a>
+            {% endif %}
             <div class="nav-links">
-                <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">
-                    <i class="fas fa-home"></i>
-                    Home
-                </a>
-                <a href="{{ url_for('main.show_files') }}" class="nav-link {% if request.endpoint == 'main.show_files' %}active{% endif %}">
-                    <i class="fas fa-file-alt"></i>
-                    Files
-                </a>
-                {% if current_user.is_ops %}
-                    <a href="{{ url_for('main.upload_file') }}" class="nav-link {% if request.endpoint == 'main.upload_file' %}active{% endif %}">
-                        <i class="fas fa-upload"></i>
-                        Upload
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('main.index') }}" class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}">
+                        <i class="fas fa-home"></i>
+                        Home
+                    </a>
+                    <a href="{{ url_for('main.show_files') }}" class="nav-link {% if request.endpoint == 'main.show_files' %}active{% endif %}">
+                        <i class="fas fa-file-alt"></i>
+                        Files
+                    </a>
+                    {% if current_user.is_ops %}
+                        <a href="{{ url_for('main.upload_file') }}" class="nav-link {% if request.endpoint == 'main.upload_file' %}active{% endif %}">
+                            <i class="fas fa-upload"></i>
+                            Upload
+                        </a>
+                    {% endif %}
+                    <form action="{{ url_for('main.logout') }}" method="POST" style="display: inline;">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{{ url_for('main.login') }}" class="nav-link {% if request.endpoint == 'main.login' %}active{% endif %}">
+                        <i class="fas fa-sign-in-alt"></i>
+                        Login
+                    </a>
+                    <a href="{{ url_for('main.register') }}" class="nav-link {% if request.endpoint == 'main.register' %}active{% endif %}">
+                        <i class="fas fa-user-plus"></i>
+                        Register
                     </a>
                 {% endif %}
-                <form action="{{ url_for('main.logout') }}" method="POST" style="display: inline;">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                </form>
             </div>
         </div>
     </nav>
@@ -228,6 +328,74 @@
 
         {% block content %}{% endblock %}
     </div>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3 class="footer-title">About SecureShare</h3>
+                <p style="color: var(--secondary-color);">
+                    A secure platform for sharing and managing files with controlled access 
+                    and real-time tracking capabilities.
+                </p>
+                <div class="footer-social">
+                    <a href="#" class="social-link">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-linkedin"></i>
+                    </a>
+                    <a href="#" class="social-link">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-title">Quick Links</h3>
+                <div class="footer-links">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('main.index') }}" class="footer-link">
+                            <i class="fas fa-home"></i> Home
+                        </a>
+                        <a href="{{ url_for('main.show_files') }}" class="footer-link">
+                            <i class="fas fa-file-alt"></i> Files
+                        </a>
+                        {% if current_user.is_ops %}
+                        <a href="{{ url_for('main.upload_file') }}" class="footer-link">
+                            <i class="fas fa-upload"></i> Upload
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ url_for('main.login') }}" class="footer-link">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <a href="{{ url_for('main.register') }}" class="footer-link">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="footer-section">
+                <h3 class="footer-title">Help & Support</h3>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-question-circle"></i> FAQ
+                    </a>
+                    <a href="#" class="footer-link">
+                        <i class="fas fa-envelope"></i> Contact Support
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; {{ now.year }} SecureShare. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

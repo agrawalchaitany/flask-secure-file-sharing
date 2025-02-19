@@ -28,7 +28,13 @@ def create_app():
     # Initialize extensions
     db.init_app(app)
     migrate.init_app(app, db)
+    
+    # Initialize login manager
     login_manager.init_app(app)
+    login_manager.login_view = 'main.login'
+    login_manager.login_message = 'Please log in to access this page.'
+    login_manager.login_message_category = 'warning'
+    
     jwt.init_app(app)
     mail.init_app(app)
     CSRFProtect(app)
